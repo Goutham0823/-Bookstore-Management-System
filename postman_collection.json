@@ -1,0 +1,311 @@
+{
+  "info": {
+    "name": "Bookstore Management System API",
+    "_postman_id": "bookstore-api-collection-v1",
+    "description": "Full REST API collection for the Bookstore Management System.\n\nBase URL: http://127.0.0.1:8000\n\n**Auth Flow:**\n1. Register a user via POST /api/register/\n2. Login via POST /api/login/ — copy the `access` token\n3. Set the `access_token` collection variable\n4. All protected endpoints use Bearer token auth automatically",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:8000", "type": "string" },
+    { "key": "access_token", "value": "", "type": "string" },
+    { "key": "refresh_token", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "Register Customer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/register/", "host": ["{{base_url}}"], "path": ["api", "register", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"securepass123\",\n  \"password_confirm\": \"securepass123\",\n  \"role\": \"CUSTOMER\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Register Admin",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/register/", "host": ["{{base_url}}"], "path": ["api", "register", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@bookstore.com\",\n  \"password\": \"adminpass123\",\n  \"password_confirm\": \"adminpass123\",\n  \"role\": \"ADMIN\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Login (saves tokens automatically)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.tokens) {",
+                  "  pm.collectionVariables.set('access_token', json.tokens.access);",
+                  "  pm.collectionVariables.set('refresh_token', json.tokens.refresh);",
+                  "  console.log('Tokens saved to collection variables');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/login/", "host": ["{{base_url}}"], "path": ["api", "login", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@bookstore.com\",\n  \"password\": \"adminpass123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": { "raw": "{{base_url}}/api/profile/", "host": ["{{base_url}}"], "path": ["api", "profile", ""] }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/token/refresh/", "host": ["{{base_url}}"], "path": ["api", "token", "refresh", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📚 Books",
+      "item": [
+        {
+          "name": "List All Books (public, paginated)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/books/?page=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "books", ""],
+              "query": [{ "key": "page", "value": "1" }]
+            }
+          }
+        },
+        {
+          "name": "Search Books by Title",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/books/?search=pragmatic",
+              "host": ["{{base_url}}"],
+              "path": ["api", "books", ""],
+              "query": [{ "key": "search", "value": "pragmatic" }]
+            }
+          }
+        },
+        {
+          "name": "Filter Books by Genre",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/books/?genre=Technology",
+              "host": ["{{base_url}}"],
+              "path": ["api", "books", ""],
+              "query": [{ "key": "genre", "value": "Technology" }]
+            }
+          }
+        },
+        {
+          "name": "Filter Books by Price Range",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/books/?min_price=10&max_price=50",
+              "host": ["{{base_url}}"],
+              "path": ["api", "books", ""],
+              "query": [
+                { "key": "min_price", "value": "10" },
+                { "key": "max_price", "value": "50" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter In-Stock Books",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/books/?in_stock=true",
+              "host": ["{{base_url}}"],
+              "path": ["api", "books", ""],
+              "query": [{ "key": "in_stock", "value": "true" }]
+            }
+          }
+        },
+        {
+          "name": "Get Book by ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/books/1/", "host": ["{{base_url}}"], "path": ["api", "books", "1", ""] }
+          }
+        },
+        {
+          "name": "Add New Book (Admin only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/books/", "host": ["{{base_url}}"], "path": ["api", "books", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Clean Code\",\n  \"author\": \"Robert C. Martin\",\n  \"genre\": \"Technology\",\n  \"isbn\": \"9780132350884\",\n  \"price\": \"39.99\",\n  \"description\": \"A Handbook of Agile Software Craftsmanship.\",\n  \"stock_quantity\": 25,\n  \"image_url\": \"https://example.com/clean-code.jpg\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Update Book (Admin only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/books/1/", "host": ["{{base_url}}"], "path": ["api", "books", "1", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Clean Code\",\n  \"author\": \"Robert C. Martin\",\n  \"genre\": \"Technology\",\n  \"isbn\": \"9780132350884\",\n  \"price\": \"44.99\",\n  \"description\": \"Updated description.\",\n  \"stock_quantity\": 30\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Partial Update Book (Admin only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/books/1/", "host": ["{{base_url}}"], "path": ["api", "books", "1", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": \"49.99\",\n  \"stock_quantity\": 50\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Delete Book (Admin only)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": { "raw": "{{base_url}}/api/books/1/", "host": ["{{base_url}}"], "path": ["api", "books", "1", ""] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🛒 Orders",
+      "item": [
+        {
+          "name": "List All Orders (Admin only)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/orders/?page=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", ""],
+              "query": [{ "key": "page", "value": "1" }]
+            }
+          }
+        },
+        {
+          "name": "Place New Order (Customer only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/orders/", "host": ["{{base_url}}"], "path": ["api", "orders", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    { \"book_id\": 1, \"quantity\": 2 },\n    { \"book_id\": 2, \"quantity\": 1 }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": { "raw": "{{base_url}}/api/orders/1/", "host": ["{{base_url}}"], "path": ["api", "orders", "1", ""] }
+          }
+        },
+        {
+          "name": "Update Order Status (Admin only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/api/orders/1/status/", "host": ["{{base_url}}"], "path": ["api", "orders", "1", "status", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"SHIPPED\",\n  \"payment_status\": \"PAID\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📖 API Documentation",
+      "item": [
+        {
+          "name": "Swagger UI",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/docs/", "host": ["{{base_url}}"], "path": ["api", "docs", ""] }
+          }
+        },
+        {
+          "name": "ReDoc",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/redoc/", "host": ["{{base_url}}"], "path": ["api", "redoc", ""] }
+          }
+        },
+        {
+          "name": "OpenAPI Schema (JSON)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/schema/", "host": ["{{base_url}}"], "path": ["api", "schema", ""] }
+          }
+        }
+      ]
+    }
+  ]
+}
