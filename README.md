@@ -6,7 +6,13 @@ A production-ready RESTful API built with **Django REST Framework**, featuring J
 
 ## 🚀 Quick Start
 
-### 1. Create and activate a virtual environment
+### 1. Clone and enter the project
+```bash
+git clone https://github.com/Goutham0823/-Bookstore-Management-System.git
+cd -Bookstore-Management-System
+```
+
+### 2. Create and activate a virtual environment
 ```bash
 python -m venv venv
 # Windows
@@ -15,22 +21,22 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-### 2. Install dependencies
+### 3. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Run database migrations
+### 4. Run database migrations
 ```bash
 python manage.py migrate
 ```
 
-### 4. Create a superuser (optional — for Django Admin)
+### 5. Create a superuser (optional — for Django Admin)
 ```bash
 python manage.py createsuperuser
 ```
 
-### 5. Start the development server
+### 6. Start the development server
 ```bash
 python manage.py runserver
 ```
@@ -131,10 +137,23 @@ Import `postman_collection.json` into Postman:
 
 ---
 
+## 🖼 Screenshots
+
+You can include project screenshots in `docs/screenshots/`.
+
+Example markdown:
+
+```md
+![Swagger UI](docs/screenshots/swagger-ui.png)
+![Books Endpoint](docs/screenshots/books-endpoint.png)
+```
+
+---
+
 ## 📁 Project Structure
 
 ```
-bookstore_api/
+book-management-system/
 ├── manage.py
 ├── requirements.txt
 ├── .env
